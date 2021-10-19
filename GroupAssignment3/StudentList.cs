@@ -56,7 +56,27 @@ namespace GroupAssignment3
         /// Sort the Students alphabetically
         /// Implement sort on strings using either SelectionSort or BubbleSort from BOOP_05_07 
         /// </summary>
-        public void Sort() { }
+        public void Sort() {
+
+            // The same solution as the one I used to sort by name in ProjectPartA
+            for (int i = 0; i < students.Length; i++)
+            {
+                bool isSorting = false;
+                
+                for (int j = 0; j < students.Length; j++)
+                {
+                    if (students[j] != null && students[j + 1] != null && students[j].CompareTo(students[j + 1]) > 0)
+                    {
+                        isSorting = true;
+                        (students[j], students[j + 1]) = (students[j + 1], students[j]);
+                    }
+                    if (!isSorting)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
 
 
         /// <summary>
