@@ -7,7 +7,6 @@ namespace GroupAssignment3
         const int MaxNrOfStudents = 50;
         string[] students;
     
-
         /// <summary>
         /// The number of students to be divided into groups
         /// </summary>
@@ -26,8 +25,16 @@ namespace GroupAssignment3
             return sRet;
         }
 
-
-
+        private void CountStudents()
+        {
+            for (int i = 0; i < students.Length; i++)
+            {
+                if (students[i] != null)
+                {
+                    _NrOfStudents++;
+                }
+            }
+        }
 
         /// <summary>
         /// Number of groups to be created using CreateGroups
@@ -35,8 +42,6 @@ namespace GroupAssignment3
         /// if Number < 1 and > Count/2 an ArgumentOutOfRangeException() is thrown
         /// if Count  == 0 an ArgumentException("Empty list") is thrown
         /// </summary>
-        //public int NrOfGroups { get; set; }
-
         private int _NrOfGroups = 0;
         public int NrOfGroups {get; set;}
 
@@ -44,12 +49,18 @@ namespace GroupAssignment3
         /// <summary>
         /// Number of Students to be placed in each group
         /// </summary>
-        public int NrStudentsInGroup { get; }
+        public int NrStudentsInGroup 
+        {
+            get { return _NrOfStudents / _NrOfGroups; }
+        }
 
         /// <summary>
         /// Number of students that remains to be placed in groups after groups are created
         /// </summary>
-        public int NrStudentsNotInGroup { get; }
+        public int NrStudentsNotInGroup 
+        {   
+            get { return _NrOfStudents % _NrOfGroups; }
+        }
 
 
         /// <summary>
@@ -58,21 +69,14 @@ namespace GroupAssignment3
         /// </summary>
         public void Sort() {
 
-            // The same solution as the one I used to sort by name in ProjectPartA
-            for (int i = 0; i < students.Length; i++)
+            // Using .CompareTo with bubble sort
+            for (int j = 0; j < students.Length - 1; j++)
             {
-                bool isSorting = false;
-                
-                for (int j = 0; j < students.Length; j++)
+                for (int i = j + 1; i < students.Length; i++)
                 {
-                    if (students[j] != null && students[j + 1] != null && students[j].CompareTo(students[j + 1]) > 0)
+                    if (students[j] != null && students[i] != null && students[j].CompareTo(students[i]) > 0)
                     {
-                        isSorting = true;
-                        (students[j], students[j + 1]) = (students[j + 1], students[j]);
-                    }
-                    if (!isSorting)
-                    {
-                        break;
+                        (students[j], students[i]) = (students[i], students[j]);
                     }
                 }
             }
@@ -118,7 +122,8 @@ namespace GroupAssignment3
             students[30] = "Adrian";
             students[31] = "Teodor";
 
-            _NrOfStudents = 30;
+            // Without changing the way _NrOfStudents is set, the override string ToString won't work properly
+            CountStudents();
         }
     }
 }

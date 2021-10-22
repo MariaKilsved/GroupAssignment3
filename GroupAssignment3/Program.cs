@@ -6,12 +6,8 @@ namespace GroupAssignment3
     {
         static void Main(string[] args)
         {
-            //Main program is using IStudentList as the type. 
-            //Compilation works fine. 
-            IStudentList myStudents = null;
-
             //Before execution myStudents needs to be assign an instance of StudentList
-            //myStudents = new StudentList();
+            StudentList myStudents = new StudentList();
 
             Console.WriteLine("Empty student list");
             Console.WriteLine(myStudents);
