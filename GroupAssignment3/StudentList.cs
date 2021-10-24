@@ -1,39 +1,34 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GroupAssignment3
 {
     class StudentList: IStudentList
     {
         const int MaxNrOfStudents = 50;
-        string[] students;
-    
+        List<string> students;
+        List<List<string>> groupedStudents;
+
         /// <summary>
         /// The number of students to be divided into groups
         /// </summary>
         private int _NrOfStudents = 0;
-        public int NrOfStudents => _NrOfStudents;
+        public int NrOfStudents {
+            get { return students.Count; }
+            set { _NrOfStudents = NrOfStudents; }
+        }
 
         public override string ToString()
         {
             string sRet = "";
-            for (int i = 0; i < _NrOfStudents; i++)
+            for (int i = 0; i < (students?.Count); i++)
             {
                 sRet += $"{students[i],-15}";
                 if ((i + 1) % 5 == 0)
                     sRet += "\n";
             }
             return sRet;
-        }
-
-        private void CountStudents()
-        {
-            for (int i = 0; i < students.Length; i++)
-            {
-                if (students[i] != null)
-                {
-                    _NrOfStudents++;
-                }
-            }
         }
 
         /// <summary>
@@ -43,7 +38,37 @@ namespace GroupAssignment3
         /// if Count  == 0 an ArgumentException("Empty list") is thrown
         /// </summary>
         private int _NrOfGroups = 0;
-        public int NrOfGroups {get; set;}
+        public int NrOfGroups {
+            get
+            {
+                return _NrOfGroups;
+            }
+            set 
+            {
+                try
+                {
+                    // Because of the way UserInput is made, this exception will never be reached.
+                    if (value < 1 || value > (NrOfStudents / 2))
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+
+                    // Because of the way UserInput is made, this exception will never be reached.
+                    if (NrOfStudents == 0)
+                        throw new Exception("Empty list");
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
+                _NrOfGroups = value;
+            }
+        }
 
 
         /// <summary>
@@ -51,7 +76,10 @@ namespace GroupAssignment3
         /// </summary>
         public int NrStudentsInGroup 
         {
-            get { return _NrOfStudents / _NrOfGroups; }
+            get 
+            {
+                return NrOfGroups != 0 ? NrOfStudents / NrOfGroups : 0;
+            }
         }
 
         /// <summary>
@@ -59,7 +87,7 @@ namespace GroupAssignment3
         /// </summary>
         public int NrStudentsNotInGroup 
         {   
-            get { return _NrOfStudents % _NrOfGroups; }
+            get { return NrOfGroups != 0 ? NrOfStudents % NrOfGroups : NrOfStudents; }
         }
 
 
@@ -70,9 +98,9 @@ namespace GroupAssignment3
         public void Sort() {
 
             // Using .CompareTo with bubble sort
-            for (int j = 0; j < students.Length - 1; j++)
+            for (int j = 0; j < students.Count - 1; j++)
             {
-                for (int i = j + 1; i < students.Length; i++)
+                for (int i = j + 1; i < students.Count; i++)
                 {
                     if (students[j] != null && students[i] != null && students[j].CompareTo(students[i]) > 0)
                     {
@@ -82,48 +110,117 @@ namespace GroupAssignment3
             }
         }
 
+        /// <summary>
+        /// Shuffles the students randomly.
+        /// Uses .OrderBy from System.Linq to sort elements, placing each element at a random index through random.Next()
+        /// </summary>
+        public void ShuffleStudents()
+        {
+            Random random = new Random();
+            students = students.OrderBy(x => random.Next()).ToList();
+        }
+
+        /// <summary>
+        /// Calls on ShuffleStudents to randomly sort the students. Places grouped students in the 2D list groupedStudents.
+        /// </summary>
+        public void CreateGroups()
+        {
+            ShuffleStudents();
+
+            groupedStudents = new List<List<string>>();
+
+            int counter = 0;
+            for(int i = 0; i < NrOfGroups; i++)
+            {
+                List<string> temp = new List<string>();
+
+                for (int j = 0; j < students.Count; j++)
+                {
+                    counter++;
+                    counter = (counter == NrOfGroups) ? 0 : counter;
+
+                    if (students[j] != null && counter == i)
+                    {
+                        temp.Add(students[j]);
+                    }
+                }
+
+                groupedStudents.Add(temp);
+            }
+        }
+
+        public string GetAllGroups()
+        {
+            string sRet = "";
+
+            for (int i = 0; i < groupedStudents?.Count; i++)
+            {
+                sRet += $"Group {i + 1}:\n";
+
+                for (int j = 0; j < groupedStudents?[i].Count; j++)
+                {
+                    sRet += $"{groupedStudents.ElementAt(i).ElementAt(j)}";
+                    sRet += "\n";
+                }
+                sRet += "\n";
+            }
+            return sRet;
+        }
+
+        public string GetGroup(int GroupNr)
+        {
+            string sRet = "";
+
+            sRet += $"Group {GroupNr}:\n";
+
+            for (int i = 0; i < groupedStudents?[GroupNr - 1].Count; i ++)
+            {
+                sRet += $"{groupedStudents.ElementAt(GroupNr - 1).ElementAt(i)}";
+                sRet += "\n";
+            }
+
+            return sRet;
+        }
+
 
         /// <summary>
         /// Fills StudentList with the names of the students from of OOP1 .Net5 
         /// </summary>
         public void CreateOOP1dotNet5()
         {
-            students = new string[MaxNrOfStudents];
-            students[0] = "Sahar";
-            students[1] = "Jennifer";
-            students[2] = "Shohruh";
-            students[3] = "Jonathan";
-            students[4] = "Leo";
-            students[5] = "Jenny";
-            students[6] = "Mohamed";
-            students[7] = "Ferri";
-            students[8] = "Alexandra F";
-            students[9] = "Vidar";
-            students[10] = "Kamran";
-            students[11] = "Pontus";
-            students[12] = "Kaveh";
-            students[13] = "Maria";
-            students[14] = "Adam";
-            students[15] = "Sophie";
-            students[16] = "Louise";
-            students[17] = "Fredric";
-            students[18] = "Carl-Henrik";
-            students[19] = "Frans";
-            students[20] = "Sam";
-            students[21] = "Alexandra S";
-            students[22] = "Alperen";
-            students[23] = "Josefine";
-            students[24] = "Ghasem";
-            students[25] = "Hanna";
-            students[26] = "Finan";
-            students[27] = "Niklas";
-            students[28] = "Hector";
-            students[29] = "Fredrik";
-            students[30] = "Adrian";
-            students[31] = "Teodor";
-
-            // Without changing the way _NrOfStudents is set, the override string ToString won't work properly
-            CountStudents();
+            students = new List<string>();
+            students.Add("Sahar");
+            students.Add("Jennifer");
+            students.Add("Shohruh");
+            students.Add("Jonathan");
+            students.Add("Leo");
+            students.Add("Jenny");
+            students.Add("Mohamed");
+            students.Add("Ferri");
+            students.Add("Alexandra F");
+            students.Add("Vidar");
+            students.Add("Kamran");
+            students.Add("Pontus");
+            students.Add("Kaveh");
+            students.Add("Maria");
+            students.Add("Adam");
+            students.Add("Sophie");
+            students.Add("Louise");
+            students.Add("Fredric");
+            students.Add("Carl-Henrik");
+            students.Add("Frans");
+            students.Add("Sam");
+            students.Add("Alexandra S");
+            students.Add("Alperen");
+            students.Add("Josefine");
+            students.Add("Ghasem");
+            students.Add("Hanna");
+            students.Add("Finan");
+            students.Add("Niklas");
+            students.Add("Hector");
+            students.Add("Fredrik");
+            students.Add("Adrian");
+            students.Add("Teodor");
         }
     }
 }

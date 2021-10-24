@@ -20,8 +20,14 @@ namespace GroupAssignment3
             myStudents.Sort();
             Console.WriteLine(myStudents);
             Console.WriteLine();
-            
-            
+
+            /*
+            Console.WriteLine("\nShuffled student list");
+            myStudents.ShuffleStudents();
+            Console.WriteLine(myStudents);
+            Console.WriteLine();
+            */
+
             //Using the General UserInput we made in one of the code exercises
             int NrOfGroups = 0;
             bool Continue = UserInput.TryReadInt32("How many groups do you want", 1, myStudents.NrOfStudents / 2, out NrOfGroups);
@@ -29,6 +35,14 @@ namespace GroupAssignment3
 
             myStudents.NrOfGroups = NrOfGroups;
             Console.WriteLine($"If you make {NrOfGroups} group(s), each group will have {myStudents.NrStudentsInGroup} student(s) with {myStudents.NrStudentsNotInGroup} student(s) remaining to be placed in the groups.");
+
+            Console.WriteLine("All groups:");
+            myStudents.CreateGroups();
+            Console.WriteLine();
+            Console.Write(myStudents.GetAllGroups());
+
+            Console.WriteLine("Only Group 1");
+            Console.Write(myStudents.GetGroup(1));
         }
     }
 }
